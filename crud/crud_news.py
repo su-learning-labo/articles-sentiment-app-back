@@ -29,6 +29,10 @@ def get_sentiment_analysis(db: Session, analysis_id: int):
     return db.query(SentimentAnalysis).filter(SentimentAnalysis.id == analysis_id).first()
 
 
+def get_article_sentiment(db: Session, article_id: int):
+    return db.query(SentimentAnalysis).filter(SentimentAnalysis.article_id == article_id).first()
+
+
 def create_sentiment_analysis(db: Session, analysis: SentimentAnalysisCreate):
     db_analysis = SentimentAnalysis(
         article_id=analysis.article_id,
@@ -42,13 +46,13 @@ def create_sentiment_analysis(db: Session, analysis: SentimentAnalysisCreate):
 
 
 def update_sentiment_analysis(db: Session, analysis_id: int, sentiment: str, score: float):
-    db_analysis = get_sentiment_analysis(db, analysis_id)
-    if db_analysis:
-        db_analysis.sentiment = sentiment
-        db_analysis.score = score
+    sentiment_analysis = db.query(SentimentAnalysis).filter(SentimentAnalysis.article_id == analysis_id).first()
+    if sentiment_analysis:
+        sentiment_analysis.sentiment = sentiment
+        sentiment_analysis.score = score
         db.commit()
-        db.refresh(db_analysis)
-    return db_analysis
+        db.refresh(sentiment_analysis)
+    return sentiment_analysis
 
 
 # def analyze_article_sentiment(db: Session, article_id: int):

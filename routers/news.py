@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from database import SessionLocal
-from schemas import NewsArticleCreate, NewsArticle, SentimentAnalysisCreate, SentimentAnalysis
+from schemas import NewsArticleCreate, NewsArticle, SentimentAnalysisCreate, SentimentAnalysis, SentimentAnalysisUpdate
 from services.news_service import fetch_news_articles, analyze_sentiment, get_and_save_all_articles
 from crud import crud_news
 
@@ -21,12 +21,13 @@ def get_db():
 
 @router.get("/articles/", response_model=List[NewsArticle])
 # DBに保存されているニュース記事を呼び出す
-def read_articles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def read_articles(skip: int = 0, limit: int = 30, db: Session = Depends(get_db)):
     articles = crud_news.get_articles(db=db, skip=skip, limit=limit)
     return articles
 
 
 @router.get("/articles/{article_id}", response_model=NewsArticle)
+# 指定したIDの記事を呼び出す
 def read_article(article_id: int, db: Session = Depends(get_db)):
     db_article = crud_news.get_news(db=db, news_id=article_id)
     if db_article is None:
@@ -35,6 +36,7 @@ def read_article(article_id: int, db: Session = Depends(get_db)):
 
 
 @router.post('/articles/')
+# NewsAPIから記事を取得し、DBに保存する
 def create_article(db: Session = Depends(get_db)):
     articles = fetch_news_articles()
 
@@ -50,10 +52,20 @@ def create_article(db: Session = Depends(get_db)):
 
         crud_news.create_news_article(db=db, news=news)
 
-    return {'status': 'success', 'message': 'News fetched and saved successfull.'}
+    return {'status': 'success', 'message': 'News fetched and saved successfully.'}
+
+
+@router.get('/articles/{article_id}/sentiment/', response_model=SentimentAnalysis)
+# 指定した記事IDの感情分析結果を呼び出す
+def read_sentiment(article_id: int, db: Session = Depends(get_db)):
+    db_sentiment = crud_news.get_article_sentiment(db=db, article_id=article_id)
+    if db_sentiment is None:
+        raise HTTPException(status_code=404, detail='Article not found')
+    return db_sentiment
 
 
 @router.post("/articles/{article_id}/sentiment/")
+# IDを指定してDBに保存してある記事を呼び出し、感情分析結果をDBに保存する
 def analyze_article(article_id: int, db: Session = Depends(get_db)):
     db_article = crud_news.get_news(db, news_id=article_id)
     if db_article is None:
@@ -70,16 +82,30 @@ def analyze_article(article_id: int, db: Session = Depends(get_db)):
 
 # TODO: エラー解消
 @router.put('/articles/{article_id}/sentiment/', response_model=SentimentAnalysis)
-def update_article_sentiment(article_id: int, sentiment_data: SentimentAnalysisCreate, db: Session = Depends(get_db)):
-    existing_analysis = crud_news.get_sentiment_analysis(db, analysis_id=article_id)
-    if not existing_analysis:
-        raise HTTPException(status_code=404, detail='Sentiment analysis not found')
-    return update_article_sentiment(
+# 記事を指定して、感情分析結果を更新する
+def update_article_sentiment(
+        article_id: int,
+        sentiment_update: SentimentAnalysisUpdate,
+        db: Session = Depends(get_db)
+):
+    # 既存の感情分析結果を取得
+    sentiment_analysis = crud_news.get_sentiment_analysis(
         db=db,
-        analysis_id=existing_analysis.id,
-        sentiment=sentiment_data.sentiment,
-        score=sentiment_data.score
+        analysis_id=article_id,
     )
+    if not sentiment_analysis:
+        raise HTTPException(status_code=404, detail='Sentiment analysis not found.')
+
+    updated_sentiment = crud_news.update_sentiment_analysis(
+        db=db,
+        analysis_id=article_id,
+        sentiment=sentiment_update.sentiment,
+        score=sentiment_update.score,
+    )
+    if not updated_sentiment:
+        raise HTTPException(status_code=404, detail='Unable to update sentiment analysis')
+
+    return updated_sentiment
 
 
 # TODO: エラー解消
@@ -92,4 +118,4 @@ def fetch_analyze_and_store_articles(db: Session = Depends(get_db)):
 
 
 if __name__ == "__main__":
-    create_article()
+    read_sentiment(article_id=3)

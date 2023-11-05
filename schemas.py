@@ -47,6 +47,12 @@ class SentimentAnalysis(SentimentAnalysisBase):
         from_attributes = True
 
 
+# 感情分析の更新用スキーマ
+class SentimentAnalysisUpdate(BaseModel):
+    sentiment: str
+    score: float
+
+
 # ニュース記事とそれに紐づく感情分析結果の読み込み用スキーマ
 class NewsArticleWithSentiment(NewsArticle):
     sentiments: List[SentimentAnalysis] = []
