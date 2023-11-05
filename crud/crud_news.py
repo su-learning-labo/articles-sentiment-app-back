@@ -5,12 +5,16 @@ from schemas import NewsArticleCreate, SentimentAnalysisCreate
 # from services.news_service import analyze_sentiment
 
 
-def get_news(db: Session, news_id: int):
-    return db.query(NewsArticle).filter(NewsArticle.id == news_id).first()
+def get_all_news(db: Session):
+    return db.query(NewsArticle).all()
 
 
 def get_articles(db: Session, skip: int = 0, limit: int = 100):
     return db.query(NewsArticle).offset(skip).limit(limit).all()
+
+
+def get_news(db: Session, news_id: int):
+    return db.query(NewsArticle).filter(NewsArticle.id == news_id).first()
 
 
 # def get_news_by_ranking(db: Session, ranking: int):
@@ -45,15 +49,15 @@ def create_sentiment_analysis(db: Session, analysis: SentimentAnalysisCreate):
     return db_analysis
 
 
-def update_sentiment_analysis(db: Session, analysis_id: int, sentiment: str, score: float):
+def update_sentiment_analysis(db: Session, analysis_id: int, new_sentiment: str, new_score: float):
     sentiment_analysis = db.query(SentimentAnalysis).filter(SentimentAnalysis.article_id == analysis_id).first()
     if sentiment_analysis:
-        sentiment_analysis.sentiment = sentiment
-        sentiment_analysis.score = score
+        sentiment_analysis.sentiment = new_sentiment
+        sentiment_analysis.score = new_score
         db.commit()
         db.refresh(sentiment_analysis)
-    return sentiment_analysis
-
+        return sentiment_analysis
+    return None
 
 # def analyze_article_sentiment(db: Session, article_id: int):
 #     article = db.query(NewsArticle).filter(NewsArticle.id == article_id).first()

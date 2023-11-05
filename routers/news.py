@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from database import SessionLocal
 from schemas import NewsArticleCreate, NewsArticle, SentimentAnalysisCreate, SentimentAnalysis, SentimentAnalysisUpdate
-from services.news_service import fetch_news_articles, analyze_sentiment, get_and_save_all_articles
+from services.news_service import fetch_news_articles, analyze_sentiment, reanalyze_article_sentiment, fetch_and_analyze_news, perform_and_save_sentiment_analysis
 from crud import crud_news
 
 router = APIRouter()
@@ -55,6 +55,12 @@ def create_article(db: Session = Depends(get_db)):
     return {'status': 'success', 'message': 'News fetched and saved successfully.'}
 
 
+@router.post('/analyze-all-articles/')
+def analyze_all_articles(db: Session = Depends(get_db)):
+    perform_and_save_sentiment_analysis(db)
+    return {'message': 'Sentiment analysis performed and saved for all articles.'}
+
+
 @router.get('/articles/{article_id}/sentiment/', response_model=SentimentAnalysis)
 # 指定した記事IDの感情分析結果を呼び出す
 def read_sentiment(article_id: int, db: Session = Depends(get_db)):
@@ -80,39 +86,21 @@ def analyze_article(article_id: int, db: Session = Depends(get_db)):
     return crud_news.create_sentiment_analysis(db=db, analysis=sentiment_data)
 
 
-# TODO: エラー解消
-@router.put('/articles/{article_id}/sentiment/', response_model=SentimentAnalysis)
+@router.put('/articles/{article_id}/reanalyze_sentiment/', response_model=SentimentAnalysis)
 # 記事を指定して、感情分析結果を更新する
-def update_article_sentiment(
-        article_id: int,
-        sentiment_update: SentimentAnalysisUpdate,
-        db: Session = Depends(get_db)
-):
-    # 既存の感情分析結果を取得
-    sentiment_analysis = crud_news.get_sentiment_analysis(
-        db=db,
-        analysis_id=article_id,
-    )
-    if not sentiment_analysis:
-        raise HTTPException(status_code=404, detail='Sentiment analysis not found.')
+def reanalyze_sentiment(article_id: int, db: Session = Depends(get_db)):
+    updated_analysis = reanalyze_article_sentiment(db, article_id)
 
-    updated_sentiment = crud_news.update_sentiment_analysis(
-        db=db,
-        analysis_id=article_id,
-        sentiment=sentiment_update.sentiment,
-        score=sentiment_update.score,
-    )
-    if not updated_sentiment:
-        raise HTTPException(status_code=404, detail='Unable to update sentiment analysis')
+    if updated_analysis is None:
+        raise HTTPException(status_code=404, detail='Article not found or sentiment analysis could not be updated')
 
-    return updated_sentiment
+    return updated_analysis
 
 
-# TODO: エラー解消
 @router.post('/fetch-and-analyze/')
-def fetch_analyze_and_store_articles(db: Session = Depends(get_db)):
-
-    get_and_save_all_articles(db)
+# 記事の取得〜感情分析までを一括で実施、DBに保存
+def fetch_and_analyze(db: Session = Depends(get_db)):
+    fetch_and_analyze_news(db=db)
 
     return {'message': 'Articles fetched, analyzed, and saved successfully.'}
 
