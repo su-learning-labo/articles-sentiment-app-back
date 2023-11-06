@@ -29,6 +29,10 @@ def create_news_article(db: Session, news: NewsArticleCreate):
     return db_news
 
 
+def get_all_sentiments(db: Session):
+    return db.query(SentimentAnalysis).all()
+
+
 def get_sentiment_analysis(db: Session, analysis_id: int):
     return db.query(SentimentAnalysis).filter(SentimentAnalysis.id == analysis_id).first()
 

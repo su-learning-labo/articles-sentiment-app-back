@@ -21,9 +21,15 @@ def get_db():
 
 @router.get("/articles/", response_model=List[NewsArticle])
 # DBに保存されているニュース記事を呼び出す
-def read_articles(skip: int = 0, limit: int = 30, db: Session = Depends(get_db)):
-    articles = crud_news.get_articles(db=db, skip=skip, limit=limit)
+def read_articles(db: Session = Depends(get_db)):
+    articles = crud_news.get_all_news(db=db)
     return articles
+
+
+@router.get('/sentiments/', response_model=List[SentimentAnalysis])
+def read_sentiments(db: Session = Depends(get_db)):
+    sentiments = crud_news.get_all_sentiments(db=db)
+    return sentiments
 
 
 @router.get("/articles/{article_id}", response_model=NewsArticle)
