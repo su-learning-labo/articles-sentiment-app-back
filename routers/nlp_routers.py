@@ -1,9 +1,11 @@
+import ginza
 from fastapi import APIRouter, Body
 from schemas import TextAnalysisResponse, TextAnalysisRequest
 import spacy
 from spacy.tokens import Token
 
 nlp = spacy.load('ja_ginza_electra')
+ginza.set_split_mode(nlp, 'C')
 
 router = APIRouter()
 

@@ -22,7 +22,7 @@ def fetch_news_articles():
         'API_KEY': API_KEY,
         'country': 'jp',
         'language': 'jp',
-        'pageSize': 100,
+        'pageSize': 20,
     }
 
     response = requests.get(url=NEWSAPI_URL, headers=HEADERS, params=params)
@@ -98,7 +98,7 @@ def fetch_and_analyze_news(db: Session):
         'API_KEY': API_KEY,
         'country': 'jp',
         'language': 'jp',
-        'pageSize': 100,
+        'pageSize': 20,
     }
 
     response = requests.get(url=NEWSAPI_URL, headers=HEADERS, params=params)
