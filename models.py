@@ -29,3 +29,11 @@ class SentimentAnalysis(Base):
     article_id = Column(Integer, ForeignKey('news_articles.id'), nullable=False)
 
     article = relationship("NewsArticle", back_populates="sentiments")
+
+
+# class AnalyzedText(Base):
+#     __tablename__ = "analyzed_texts"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     original_text = Column(String, index=True)
+#     nouns = Column(String)

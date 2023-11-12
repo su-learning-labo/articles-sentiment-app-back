@@ -4,3 +4,7 @@ requests
 sqlalchemy
 torch
 transformers
+spacy
+ginza
+ja_ginza
+ja_ginza_electra

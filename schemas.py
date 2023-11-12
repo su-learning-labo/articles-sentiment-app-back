@@ -56,3 +56,11 @@ class SentimentAnalysisUpdate(BaseModel):
 # ニュース記事とそれに紐づく感情分析結果の読み込み用スキーマ
 class NewsArticleWithSentiment(NewsArticle):
     sentiments: List[SentimentAnalysis] = []
+
+
+class TextAnalysisRequest(BaseModel):
+    text: str
+
+
+class TextAnalysisResponse(BaseModel):
+    nouns: List[str]
