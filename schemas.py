@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 # 共通となる記事の属性
@@ -62,5 +62,17 @@ class TextAnalysisRequest(BaseModel):
     text: str
 
 
+class TokenData(BaseModel):
+    token_no: str
+    text: Optional[str] = None
+    lemma: Optional[str] = None
+    pos: str
+    tag: Optional[str] = None
+
+
 class TextAnalysisResponse(BaseModel):
+    tokens: List[TokenData]
+
+
+class NounsResponse(BaseModel):
     nouns: List[str]

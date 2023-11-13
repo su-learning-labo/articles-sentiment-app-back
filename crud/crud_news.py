@@ -9,7 +9,7 @@ def get_all_news(db: Session):
     return db.query(NewsArticle).all()
 
 
-def get_articles(db: Session, skip: int = 0, limit: int = 100):
+def get_articles(db: Session, skip: int = 0, limit: int = 20):
     return db.query(NewsArticle).offset(skip).limit(limit).all()
 
 
