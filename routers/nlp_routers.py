@@ -4,7 +4,7 @@ from schemas import TextAnalysisResponse, TextAnalysisRequest
 import spacy
 from spacy.tokens import Token
 
-nlp = spacy.load('ja_ginza_electra')
+nlp = spacy.load('ja_ginza')
 ginza.set_split_mode(nlp, 'C')
 
 router = APIRouter()
