@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from database import SessionLocal
 from schemas import NewsArticleCreate, NewsArticle, SentimentAnalysisCreate, SentimentAnalysis, SentimentAnalysisUpdate
-from services.news_service import fetch_news_articles, analyze_sentiment, reanalyze_article_sentiment, fetch_and_analyze_news, perform_and_save_sentiment_analysis
+from services.news_service import fetch_news_articles, analyze_sentiment, reanalyze_article_sentiment, \
+    fetch_and_analyze_news, perform_and_save_sentiment_analysis
 from crud import crud_news
 
 router = APIRouter()
