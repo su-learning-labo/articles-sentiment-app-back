@@ -1,6 +1,6 @@
 import ginza
 from fastapi import APIRouter, Body
-from schemas import TextAnalysisResponse, TextAnalysisRequest, TokenData, NounsResponse
+from schemas import TextAnalysisResponse, TextAnalysisRequest, TokenData, NounsResponse, TextResponse, TextRequest
 import spacy
 
 
@@ -22,6 +22,15 @@ def analyze_text(request: TextAnalysisRequest = Body(...)):
         ) for i, token in enumerate(doc)
     ]
     return TextAnalysisResponse(tokens=tokens)
+
+
+@router.post('/wakati/', response_model=TextResponse)
+def create_wakati(request: TextRequest):
+    doc = nlp(request.text)
+    ginza.set_split_mode(nlp, 'C')
+    wakati = ' '.join([token.text for token in doc])
+
+    return TextResponse(wakati=wakati)
 
 
 @router.post("/extract-nouns/", response_model=NounsResponse)

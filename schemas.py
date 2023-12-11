@@ -62,12 +62,25 @@ class TextAnalysisRequest(BaseModel):
     text: str
 
 
+class TextRequest(BaseModel):
+    text: str
+
+
+class TextResponse(BaseModel):
+    wakati: Optional[str]
+
+
 class TokenData(BaseModel):
     token_no: str
     text: Optional[str] = None
     lemma: Optional[str] = None
     pos: str
     tag: Optional[str] = None
+
+
+class TokenText(BaseModel):
+    token_no: str
+    text: Optional[str] = None
 
 
 class TextAnalysisResponse(BaseModel):
