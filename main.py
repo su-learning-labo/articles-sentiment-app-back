@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from routers import news, nlp_routers
+from routers import news
 from database import Base, engine
 
 import logging
@@ -13,7 +13,6 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 app.include_router(news.router)
-app.include_router(nlp_routers.router)
 
 
 @app.get("/")

@@ -27,6 +27,7 @@ class SentimentAnalysis(Base):
     sentiment = Column(String, nullable=False)
     score = Column(Float, nullable=False)
     article_id = Column(Integer, ForeignKey('news_articles.id'), nullable=False)
+    # analyzed_description = Column(String)
 
     article = relationship("NewsArticle", back_populates="sentiments")
 

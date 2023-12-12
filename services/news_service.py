@@ -1,4 +1,6 @@
 import requests
+import spacy
+import ginza
 from sqlalchemy.orm import Session
 from transformers import pipeline
 from typing import List, Dict
@@ -123,3 +125,12 @@ def fetch_and_analyze_news(db: Session):
             score=sentiment_result[0]['score']
         )
         crud_news.create_sentiment_analysis(db, sentiment_data)
+
+
+nlp = spacy.load('ja_ginza')
+
+
+def analyze_text(text):
+    doc = nlp(text)
+    ginza.set_split_mode(nlp, 'C')
+    return ' '.join([token.lemma_ for token in doc if token.pos_ in ['NOUN', 'VERB', 'ADJ']])

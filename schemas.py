@@ -31,6 +31,7 @@ class NewsArticle(NewsArticleBase):
 class SentimentAnalysisBase(BaseModel):
     sentiment: str
     score: float
+    analyzed_description: str
 
 
 # 感情分析結果の作成用スキーマ
@@ -51,6 +52,7 @@ class SentimentAnalysis(SentimentAnalysisBase):
 class SentimentAnalysisUpdate(BaseModel):
     sentiment: str
     score: float
+    # analyzed_description: str
 
 
 # ニュース記事とそれに紐づく感情分析結果の読み込み用スキーマ
@@ -58,34 +60,3 @@ class NewsArticleWithSentiment(NewsArticle):
     sentiments: List[SentimentAnalysis] = []
 
 
-class TextAnalysisRequest(BaseModel):
-    text: str
-
-
-class TextRequest(BaseModel):
-    text: str
-
-
-class TextResponse(BaseModel):
-    wakati: Optional[str]
-
-
-class TokenData(BaseModel):
-    token_no: str
-    text: Optional[str] = None
-    lemma: Optional[str] = None
-    pos: str
-    tag: Optional[str] = None
-
-
-class TokenText(BaseModel):
-    token_no: str
-    text: Optional[str] = None
-
-
-class TextAnalysisResponse(BaseModel):
-    tokens: List[TokenData]
-
-
-class NounsResponse(BaseModel):
-    nouns: List[str]
